@@ -3,9 +3,9 @@ php:
    # Description du conteneur
    build:  ./engine/php_server/
    ports:
-     - 80:80
+     - 8017:80
    volumes:
-     - /root/lamp/html:/var/www/html
+     - ./html:/var/www/html
    links:
      - db
    dns:
@@ -14,22 +14,24 @@ php:
 # Conteneur MySQL nommé db (database)
 db:
    # Decription du conteneur
-   image: mysql
+   image: mysql:5.7
    environment:
      MYSQL_ROOT_PASSWORD: Secret
      MYSQL_DATABASE: mydb
      MYSQL_USER: mydb_user
      MYSQL_PASSWORD: mydb_password
    volumes:
-     - /root/lamp/mysqld_charset.cnf:/etc/mysql/conf.d/mysqld_charset.cnf
+     - ./mysqld_charset.cnf:/etc/mysql/conf.d/mysqld_charset.cnf
 # Conteneur PhpMyAdmin nommé phpmyadmin
 phpmyadmin:
    # Description du conteneur
    image: phpmyadmin/phpmyadmin
    links:
-     - db
+     - db:mysql
    ports:
      - 8181:80
    environment:
-     MYSQL_USERNAME: root
-     MYSQL_ROOT_PASSWORD: Secret
+    MYSQL_USER: mydb_user
+    MYSQL_USERNAME: root
+    MYSQL_ROOT_PASSWORD: Secret
+    PMA_HOST: mysql
